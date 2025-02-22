@@ -10,11 +10,7 @@ import java.time.LocalDateTime;
 public class user {
     @Id
     private String Phone;
-
     private String firstName;
     private String lastName;
     private float rate;
-    private String Address;
-    private String pincode;
-
 }
