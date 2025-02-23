@@ -2,6 +2,7 @@ package com.application.Object;
 
 import jakarta.persistence.*;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -18,9 +19,14 @@ public class order {
     private user phone;
     private int quantity;
     private String status;
-    private LocalDateTime oderDate;
+    private Date oderDate;
+    private Time oderTime;
     private Date deliveryDate;
     private float totalAmount;
+    @JoinColumns({
+            @JoinColumn(name = "admin_id", referencedColumnName = "id"),
+    })
+    private int admin_id;
 
 
 }

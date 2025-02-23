@@ -1,16 +1,18 @@
 package com.application.Object;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class user_credentials {
 
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String phone_number;
+    @JoinColumns({
+            @JoinColumn(name = "user_phone", referencedColumnName = "phone"),
+    })
+    private String phone;
 
     private String password;
 
