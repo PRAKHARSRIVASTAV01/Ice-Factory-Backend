@@ -1,4 +1,7 @@
 package com.application.Repository;
 
-public interface adminRepository {
+import com.application.Object.admin;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface adminRepository  extends JpaRepository<admin, Long> {
 }
