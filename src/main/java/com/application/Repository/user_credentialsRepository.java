@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface user_credentialsRepository  extends JpaRepository<user_credentials, Long> {
     user_credentials findByPhone(String phone);
+
+    void deleteByPhone(String phone);
 }

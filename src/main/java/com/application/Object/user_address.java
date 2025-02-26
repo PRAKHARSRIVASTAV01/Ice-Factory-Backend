@@ -16,5 +16,26 @@ public class user_address {
     @JoinColumns({
             @JoinColumn(name = "address_address_id", referencedColumnName = "address_id"),
     })
-    private int address_id;
+    private Long address_id;
+
+    public user_address(String phone, Long address_id) {
+        Phone = phone;
+        this.address_id = address_id;
+    }
+
+    public String getPhone() {
+        return Phone;
+    }
+
+    public void setPhone(String phone) {
+        Phone = phone;
+    }
+
+    public Long getAddress_id() {
+        return address_id;
+    }
+
+    public void setAddress_id(Long address_id) {
+        this.address_id = address_id;
+    }
 }
