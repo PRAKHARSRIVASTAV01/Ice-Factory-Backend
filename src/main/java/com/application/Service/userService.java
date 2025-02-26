@@ -17,8 +17,6 @@ public class userService {
 
     @Autowired
     private user_credentialsRepository userCredentialsRepository;
-    @Autowired
-    private  addressService addressService;
 
 
     public boolean verifyLogin(String phone, String password) {
