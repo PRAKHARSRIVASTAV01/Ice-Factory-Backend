@@ -42,5 +42,13 @@ public class order_statusService {
                 .collect(Collectors.toList());
     }
 
+    public List<order_status> getAllStatuses() {
+        return order_statusRepository.findAll();
+    }
+
+    public List<order_status> getStatusesByStatus(String status) {
+        return order_statusRepository.findAllByStatus(status);
+    }
+
 
 }

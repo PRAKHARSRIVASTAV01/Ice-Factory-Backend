@@ -18,7 +18,6 @@ public class order {
     })
     private user phone;
     private int quantity;
-    private String status;
     private Date oderDate;
     private Time oderTime;
     private Date deliveryDate;
@@ -34,5 +33,62 @@ public class order {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public user getPhone() {
+        return phone;
+    }
+
+    public void setPhone(user phone) {
+        this.phone = phone;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+
+    public Date getOderDate() {
+        return oderDate;
+    }
+
+    public void setOderDate(Date oderDate) {
+        this.oderDate = oderDate;
+    }
+
+    public Time getOderTime() {
+        return oderTime;
+    }
+
+    public void setOderTime(Time oderTime) {
+        this.oderTime = oderTime;
+    }
+
+    public Date getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(Date deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+
+    public float getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(float totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public int getAdmin_id() {
+        return admin_id;
+    }
+
+    public void setAdmin_id(int admin_id) {
+        this.admin_id = admin_id;
     }
 }
