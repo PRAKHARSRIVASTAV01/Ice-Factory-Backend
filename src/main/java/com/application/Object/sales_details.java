@@ -17,7 +17,6 @@ public class sales_details {
     private LocalDate orderDate;
     private Long order_id;
     private int quantity;
-    private float totalSales;
     private float revenue;
 
     public Long getId() {
@@ -58,14 +57,6 @@ public class sales_details {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public float getTotalSales() {
-        return totalSales;
-    }
-
-    public void setTotalSales(float totalSales) {
-        this.totalSales = totalSales;
     }
 
     public float getRevenue() {

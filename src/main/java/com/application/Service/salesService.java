@@ -5,6 +5,7 @@ import com.application.Object.sales_report;
 import com.application.Repository.sales_detailsRepository;
 import com.application.Repository.sales_reportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -86,5 +87,23 @@ public class salesService {
             return true;
         }
         return false;
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void calculateDailySalesReport() {
+        Date today = new Date();
+        List<sales_details> salesDetailsList = salesDetailsRepository.findAllByOrderDate(today);
+
+        float totalOrders = salesDetailsList.size();
+        float totalQuantity = salesDetailsList.stream().mapToInt(sales_details::getQuantity).sum();
+        float totalRevenue = (float) salesDetailsList.stream().mapToDouble(sales_details::getRevenue).sum();
+
+        sales_report salesReport = new sales_report();
+        salesReport.setDate(today);
+        salesReport.setTotal_orders(totalOrders);
+        salesReport.setTotal_quantity(totalQuantity);
+        salesReport.setTotal_revenue(totalRevenue);
+
+        salesReportRepository.save(salesReport);
     }
 }

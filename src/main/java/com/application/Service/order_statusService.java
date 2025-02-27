@@ -1,8 +1,10 @@
 package com.application.Service;
 
+import com.application.Object.order;
 import com.application.Object.order_status;
+import com.application.Object.sales_details;
 import com.application.Repository.order_statusRepository;
-import org.antlr.v4.runtime.misc.LogManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +12,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class order_statusService {
+    @Autowired
      order_statusRepository order_statusRepository;
+
+    @Autowired
+    private com.application.Repository.orderRepository orderRepository;
+
+    @Autowired
+    private com.application.Repository.sales_detailsRepository salesDetailsRepository;
+
 
     public void addStatus(Long id) {
         order_status newStatus = new order_status();
@@ -28,6 +38,23 @@ public class order_statusService {
         if (orderStatus != null) {
             orderStatus.setStatus(status);
             order_statusRepository.save(orderStatus);
+
+            if ("delivered".equals(status)) {
+                addOrderToSalesRevenue(id);
+            }
+        }
+    }
+
+    private void addOrderToSalesRevenue(Long orderId) {
+        order order = orderRepository.findById(orderId).orElse(null);
+        if (order != null) {
+            sales_details salesDetails = new sales_details();
+            salesDetails.setPhone(order.getPhone().getPhone());
+            salesDetails.setOrderDate(order.getDeliveryDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
+            salesDetails.setOrder_id(order.getId());
+            salesDetails.setQuantity(order.getQuantity());
+            salesDetails.setRevenue(order.getTotalAmount()); // Assuming total amount is the revenue
+            salesDetailsRepository.save(salesDetails);
         }
     }
 

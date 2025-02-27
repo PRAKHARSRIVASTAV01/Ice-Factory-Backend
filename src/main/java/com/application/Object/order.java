@@ -3,7 +3,6 @@ package com.application.Object;
 import jakarta.persistence.*;
 
 import java.sql.Time;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity

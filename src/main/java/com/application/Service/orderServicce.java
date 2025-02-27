@@ -7,6 +7,7 @@ import com.application.Repository.orderRepository;
 import com.application.Object.order;
 import com.application.Repository.order_statusRepository;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +20,10 @@ public class orderServicce {
     @Autowired
     private order_statusService order_statusService;
 
+
     public order addOrder(order newOrder) {
+        newOrder.setOderDate(new Date());
+        newOrder.setOderTime(new Time(System.currentTimeMillis()));
         order savedOrder = orderRepository.save(newOrder);
         order_statusService.addStatus(savedOrder.getId());
         return savedOrder;
