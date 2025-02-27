@@ -106,9 +106,19 @@ public class userService {
     }
 
 
+    public user getUserByPhone(String phone) {
+        return userRepository.findByPhone(phone);
+    }
 
+   public List<user> getUsersByFirstName(String firstName) {
+        return userRepository.findByFirstName(firstName);
+    }
 
+    public List<user> getUsersByLastName(String lastName) {
+        return userRepository.findByLastName(lastName);
+    }
 
-
-
+    public List<user> getUsersByAddress(String address) {
+        return userRepository.findByAddress(address);
+    }
 }

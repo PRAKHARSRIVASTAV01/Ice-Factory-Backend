@@ -8,6 +8,9 @@ import com.application.Repository.user_addressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class addressService {
 
@@ -24,16 +27,19 @@ public class addressService {
     }
 
 
-    public user_address addUserAddress(String Phone, Long address_id) {
-        return userAddressRepository.save(new user_address(Phone, address_id));
+    public user_address addUserAddress(String phone, Long addressId) {
+        user_address userAddress = new user_address();
+        userAddress.setPhone(phone);
+        userAddress.setAddress_id(addressId);
+        return userAddressRepository.save(userAddress);
     }
 
     public address getAddressById(Long id) {
         return addressRepository.findById(id).orElse(null);
     }
 
-    public user_address getUserAddressById(String phone) {
-        return userAddressRepository.findById(phone).orElse(null);
+    public user_address getUserAddressByphone(String phone) {
+        return userAddressRepository.findByphone(phone).orElse(null);
     }
 
     public address updateAddress(Long id, address addressDetails) {
@@ -69,5 +75,27 @@ public class addressService {
     }
 
 
+    public List<address> getUserAddresses(String phone) {
+        List<user_address> userAddresses = userAddressRepository.findByPhone(phone);
+        return userAddresses.stream()
+                .map(user_address::getAddress_id)
+                .map(this::getAddressById)
+                .collect(Collectors.toList());
+    }
 
+    public address getUserAddress(String phone, Long addressId) {
+        user_address userAddress = userAddressRepository.findById(phone).orElse(null);
+        if (userAddress != null && userAddress.getAddress_id().equals(addressId)) {
+            return getAddressById(addressId);
+        }
+        return null;
+    }
+
+    public address updateUserAddress(String phone, Long addressId, address addressDetails) {
+        user_address userAddress = userAddressRepository.findById(phone).orElse(null);
+        if (userAddress != null && userAddress.getAddress_id().equals(addressId)) {
+            return updateAddress(addressId, addressDetails);
+        }
+        return null;
+    }
 }

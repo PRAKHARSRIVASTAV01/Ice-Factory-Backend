@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Controller
+@Controller("order")
 public class orderController {
 
     @Autowired
@@ -94,7 +94,6 @@ public class orderController {
     public List<order_status> getStatusesByStatus(String status) {
         return order_statusService.getStatusesByStatus(status);
     }
-
 
 
 

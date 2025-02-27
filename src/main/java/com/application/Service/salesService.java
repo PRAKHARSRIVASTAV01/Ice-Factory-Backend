@@ -70,6 +70,21 @@ public class salesService {
     }
 
 
+    public sales_report updateSalesReport(Date date, sales_report salesReport) {
+        if (salesReportRepository.existsById(date)) {
+            salesReport.setDate(date);
+            return salesReportRepository.save(salesReport);
+        } else {
+            return null;
+        }
+    }
 
-
+    public boolean deleteSalesReport(Date date) {
+        sales_report salesReport = salesReportRepository.findById(date).orElse(null);
+        if (salesReport != null) {
+            salesReportRepository.deleteById(date);
+            return true;
+        }
+        return false;
+    }
 }

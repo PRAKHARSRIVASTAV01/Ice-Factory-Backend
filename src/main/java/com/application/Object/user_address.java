@@ -23,6 +23,10 @@ public class user_address {
         this.address_id = address_id;
     }
 
+    public user_address() {
+
+    }
+
     public String getPhone() {
         return Phone;
     }
@@ -37,5 +41,9 @@ public class user_address {
 
     public void setAddress_id(Long address_id) {
         this.address_id = address_id;
+    }
+
+    public user_address orElse(Object o) {
+        return null;
     }
 }
