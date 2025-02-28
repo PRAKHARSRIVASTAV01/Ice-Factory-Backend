@@ -118,7 +118,5 @@ public class userService {
         return userRepository.findByLastName(lastName);
     }
 
-    public List<user> getUsersByAddress(String address) {
-        return userRepository.findByAddress(address);
-    }
+
 }

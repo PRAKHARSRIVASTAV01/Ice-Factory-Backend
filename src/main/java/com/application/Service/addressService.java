@@ -1,7 +1,6 @@
 package com.application.Service;
 
 import com.application.Object.address;
-import com.application.Object.user;
 import com.application.Object.user_address;
 import com.application.Repository.addressRepository;
 import com.application.Repository.user_addressRepository;
@@ -39,7 +38,7 @@ public class addressService {
     }
 
     public user_address getUserAddressByphone(String phone) {
-        return userAddressRepository.findByphone(phone).orElse(null);
+        return userAddressRepository.findByPhone(phone).orElse(null);
     }
 
     public address updateAddress(Long id, address addressDetails) {
@@ -76,7 +75,7 @@ public class addressService {
 
 
     public List<address> getUserAddresses(String phone) {
-        List<user_address> userAddresses = userAddressRepository.findByPhone(phone);
+        List<user_address> userAddresses =  userAddressRepository.findListByPhone(phone);
         return userAddresses.stream()
                 .map(user_address::getAddress_id)
                 .map(this::getAddressById)

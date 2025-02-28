@@ -15,7 +15,7 @@ public class adminController {
     private com.application.Service.adminService adminService;
 
     @GetMapping("/verifyLogin")
-    public boolean verifyLogin(String phone, String password) {
-        return adminService.verifyLogin(phone, password);
+    public boolean verifyLogin(String username, String password) {
+        return adminService.verifyLogin(username, password);
     }
 }

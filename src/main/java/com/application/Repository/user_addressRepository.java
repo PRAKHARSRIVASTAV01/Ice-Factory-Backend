@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface user_addressRepository extends JpaRepository<user_address, String> {
-    List<user_address> findByPhone(String phone);
+    List<user_address> findListByPhone(String phone);
 
-    user_address findByphone(String phone);
+    user_address findByPhone(String phone);
 }
