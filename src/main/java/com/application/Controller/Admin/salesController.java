@@ -4,15 +4,14 @@ import com.application.Object.sales_details;
 import com.application.Object.sales_report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
 
 @Controller
+@CrossOrigin(origins = "${frontend.url}")
+@RequestMapping("api/admin/sales")
 public class salesController {
 
     @Autowired
@@ -50,7 +49,8 @@ public class salesController {
 
     @GetMapping("/salesReports/{date}")
     public sales_report getSalesReportByDate(Date date) {
-        return salesService.getSalesReportByDate(date);
+        sales_report salesReportByDate = salesService.getSalesReportByDate(date);
+        return salesReportByDate;
     }
 
     @PostMapping("/salesReports")
@@ -67,7 +67,5 @@ public class salesController {
     public boolean deleteSalesReport(Date date) {
         return salesService.deleteSalesReport(date);
     }
-
-
 
 }

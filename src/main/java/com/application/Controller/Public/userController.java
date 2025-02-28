@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller("sales")
+@CrossOrigin(origins = "${frontend.url}")
+@RequestMapping("api/public/sales")
 public class userController {
 
     @Autowired

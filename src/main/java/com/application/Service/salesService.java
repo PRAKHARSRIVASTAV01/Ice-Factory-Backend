@@ -64,12 +64,6 @@ public class salesService {
     }
 
 
-    public List<sales_report> getSalesReportListByDate(Date date) {
-        return salesReportRepository.findAll().stream()
-                .filter(salesReport -> salesReport.getDate().equals(date))
-                .collect(Collectors.toList());
-    }
-
 
     public sales_report updateSalesReport(Date date, sales_report salesReport) {
         if (salesReportRepository.existsById(date)) {
