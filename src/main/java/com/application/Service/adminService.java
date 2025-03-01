@@ -11,12 +11,12 @@ public class adminService {
     private com.application.Repository.adminRepository adminRepository;
 
 
-    public boolean verifyLogin(String username, String password) {
-        admin credentials = adminRepository.findByUsername(username);
-        if (credentials != null && credentials.getPassword().equals(password)) {
-            return true;
+    public boolean verifyLogin(admin admin) {
+        admin verifiedAdmin = adminRepository.findByUsername(admin.getUsername());
+        if (verifiedAdmin == null) {
+            return false;
         }
-        return false;
+        return verifiedAdmin.getPassword().equals(admin.getPassword());
     }
 
     public void save(admin admin) {
