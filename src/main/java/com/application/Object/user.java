@@ -3,10 +3,12 @@ package com.application.Object;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "users")
 public class user {
     @Id
     private String phone;

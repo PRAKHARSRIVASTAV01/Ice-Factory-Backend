@@ -49,7 +49,7 @@ public class order_statusService {
         order order = orderRepository.findById(orderId).orElse(null);
         if (order != null) {
             sales_details salesDetails = new sales_details();
-            salesDetails.setPhone(order.getPhone().getPhone());
+            salesDetails.setPhone(order.getPhone());
             salesDetails.setOrderDate(order.getDeliveryDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
             salesDetails.setOrder_id(order.getId());
             salesDetails.setQuantity(order.getQuantity());

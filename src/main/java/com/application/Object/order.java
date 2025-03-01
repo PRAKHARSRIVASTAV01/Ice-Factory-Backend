@@ -1,31 +1,29 @@
 package com.application.Object;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.sql.Time;
 import java.util.Date;
 
 @Entity
+@Table(name = "orders")
 public class order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "user_phone", referencedColumnName = "phone"),
-    })
-    private user phone;
+    private String phone;
     private int quantity;
     private Date oderDate;
     private Time oderTime;
     private Date deliveryDate;
     private float totalAmount;
-    @JoinColumns({
-            @JoinColumn(name = "admin_id", referencedColumnName = "id"),
-    })
     private int admin_id;
 
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -34,11 +32,11 @@ public class order {
         this.id = id;
     }
 
-    public user getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(user phone) {
+    public void setPhone(String uphone) {
         this.phone = phone;
     }
 
@@ -49,7 +47,6 @@ public class order {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-
 
     public Date getOderDate() {
         return oderDate;
@@ -90,4 +87,6 @@ public class order {
     public void setAdmin_id(int admin_id) {
         this.admin_id = admin_id;
     }
+
+
 }

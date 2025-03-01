@@ -70,7 +70,7 @@ public class orderServicce {
 
     public List<order> getOrdersByPhone(String phone) {
         return orderRepository.findAll().stream()
-                .filter(order -> order.getPhone().getPhone().equals(phone))
+                .filter(order -> order.getPhone().equals(phone))
                 .collect(Collectors.toList());
     }
 
