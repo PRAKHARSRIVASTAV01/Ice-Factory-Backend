@@ -20,14 +20,23 @@ public class order_statusService {
 
     @Autowired
     private com.application.Repository.sales_detailsRepository salesDetailsRepository;
-
+    
+    @Autowired
+    private notificationService notificationService;
 
     public void addStatus(Long id) {
         order_status newStatus = new order_status();
         newStatus.setId(id);
         newStatus.setStatus("placed");
         order_statusRepository.save(newStatus);
+        
+        // Send notification for new order
+        order order = orderRepository.findById(id).orElse(null);
+        if (order != null) {
+            notificationService.sendOrderPlacedNotification(order);
+        }
     }
+    
     public String getStatus(Long id) {
         order_status status = order_statusRepository.findById(id).orElse(null);
         return status != null ? status.getStatus() : null;
@@ -39,8 +48,14 @@ public class order_statusService {
             orderStatus.setStatus(status);
             order_statusRepository.save(orderStatus);
 
-            if ("delivered".equals(status)) {
-                addOrderToSalesRevenue(id);
+            order order = orderRepository.findById(id).orElse(null);
+            if (order != null) {
+                // Send notification for status update
+                notificationService.sendOrderStatusUpdateNotification(order, status);
+                
+                if ("delivered".equals(status)) {
+                    addOrderToSalesRevenue(id);
+                }
             }
         }
     }
