@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller("order")
 @CrossOrigin(origins = "${frontend.url}")
-@RequestMapping("api/public/order")
+@RequestMapping("api/public")
 public class orderController {
 
     @Autowired
@@ -168,5 +169,15 @@ public class orderController {
         }
     }
 
+    @GetMapping("/orders/forecast/next-15-days")
+    public ResponseEntity<Map<String, Integer>> getFutureOrderForecast() {
+        try {
+            Map<String, Integer> forecast = orderService.getFutureForecast(15);
+            return new ResponseEntity<>(forecast, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
