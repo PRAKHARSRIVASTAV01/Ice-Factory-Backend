@@ -14,7 +14,8 @@ import java.util.*;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.ArrayList;
+import com.application.Object.OrderHistoryDTO;
 @Service
 public class orderServicce {
 
@@ -22,6 +23,8 @@ public class orderServicce {
     private orderRepository orderRepository;
     @Autowired
     private order_statusService order_statusService;
+    @Autowired
+    private OrderHistoryDTO orderHistoryDTO;
 
 
     public order addOrder(order newOrder) {
@@ -114,6 +117,18 @@ public class orderServicce {
         }
         
         return forecast;
+    }
+
+    public List<OrderHistoryDTO> getUserOrderHistory(String phone) {
+        List<order> orders = orderRepository.findOrdersByPhoneOrderByDateDesc(phone);
+        List<OrderHistoryDTO> orderHistory = new ArrayList<>();
+        
+        for (order order : orders) {
+            String status = order_statusService.getStatus(order.getId());
+            orderHistory.add(new OrderHistoryDTO(order, status));
+        }
+        
+        return orderHistory;
     }
 
 }

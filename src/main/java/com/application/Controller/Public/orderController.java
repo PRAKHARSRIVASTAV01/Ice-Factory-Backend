@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import com.application.Object.OrderHistoryDTO;
 @Controller("order")
 @CrossOrigin(origins = "${frontend.url}")
 @RequestMapping("api/public")
@@ -174,6 +174,17 @@ public class orderController {
         try {
             Map<String, Integer> forecast = orderService.getFutureForecast(15);
             return new ResponseEntity<>(forecast, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/orders/history/{phone}")
+    public ResponseEntity<List<OrderHistoryDTO>> getUserOrderHistory(@PathVariable String phone) {
+        try {
+            List<OrderHistoryDTO> orderHistory = orderService.getUserOrderHistory(phone);
+            return new ResponseEntity<>(orderHistory, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

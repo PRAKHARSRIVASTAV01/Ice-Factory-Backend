@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface orderRepository extends JpaRepository<order, Long> {
 
+    @Query("SELECT o FROM order o WHERE o.phone = :phone ORDER BY o.oderDate DESC")
+    List<order> findOrdersByPhoneOrderByDateDesc(@Param("phone") String phone);
+
     @Query("SELECT o FROM order o JOIN order_status s ON o.id = s.id " +
            "WHERE o.deliveryDate BETWEEN :startDate AND :endDate " +
            "AND s.status IN ('placed', 'processing')")
