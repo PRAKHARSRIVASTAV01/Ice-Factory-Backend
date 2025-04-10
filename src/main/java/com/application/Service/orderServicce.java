@@ -23,8 +23,6 @@ public class orderServicce {
     private orderRepository orderRepository;
     @Autowired
     private order_statusService order_statusService;
-    @Autowired
-    private OrderHistoryDTO orderHistoryDTO;
 
 
     public order addOrder(order newOrder) {
