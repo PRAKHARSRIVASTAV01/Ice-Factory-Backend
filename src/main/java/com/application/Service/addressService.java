@@ -1,12 +1,14 @@
 package com.application.Service;
 
 import com.application.Object.address;
+import com.application.Object.order;
 import com.application.Object.user_address;
 import com.application.Repository.addressRepository;
 import com.application.Repository.user_addressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.application.Repository.orderRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,9 @@ public class addressService {
 
     @Autowired
     private user_addressRepository userAddressRepository;
+
+    @Autowired
+    private orderRepository orderRepository;
 
 
     public address addAddress(address newAddress , String Phone) {
@@ -96,5 +101,17 @@ public class addressService {
             return updateAddress(addressId, addressDetails);
         }
         return null;
+    }
+
+    public List<order> getOrdersByStatus(String status) {
+        List<Long> orderIds = order_statusService.getIdsByStatus(status);
+        List<order> orders = new ArrayList<>();
+        for (Long id : orderIds) {
+            order o = orderRepository.findById(id).orElse(null);
+            if (o != null) {
+                orders.add(o);
+            }
+        }
+        return orders;
     }
 }

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Service
 public class order_statusService {
     @Autowired
-     order_statusRepository order_statusRepository;
+    static order_statusRepository order_statusRepository;
 
     @Autowired
     private com.application.Repository.orderRepository orderRepository;
@@ -77,7 +77,7 @@ public class order_statusService {
         order_statusRepository.deleteById(id);
     }
 
-    public List<Long> getIdsByStatus(String status) {
+    public static List<Long> getIdsByStatus(String status) {
         return order_statusRepository.findAllByStatus(status)
                 .stream()
                 .map(order_status::getId)

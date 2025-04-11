@@ -12,7 +12,7 @@ import java.util.List;
 
 @Controller("sales")
 @CrossOrigin(origins = "${frontend.url}")
-@RequestMapping("api/public/sales")
+@RequestMapping("api/public")
 public class userController {
 
     @Autowired
@@ -53,7 +53,7 @@ public class userController {
         }
     }
 
-    @PostMapping("/users")
+    @PostMapping("/users/new")
     public ResponseEntity<user> addUser(@RequestBody user newUser, @RequestBody address newAddress) {
         try {
             addressService.addAddress(newAddress, newUser.getPhone());

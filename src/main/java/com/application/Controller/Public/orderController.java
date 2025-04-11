@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class orderController {
     @Autowired
     private com.application.Service.order_statusService order_statusService;
 
-    @GetMapping("/orders")
+    @GetMapping("/orders/all")
     public ResponseEntity<List<order>> getAllOrders() {
         try {
             List<order> orders = orderService.getAllOrders();
@@ -44,7 +45,7 @@ public class orderController {
         }
     }
 
-    @PostMapping("/orders")
+    @PostMapping("/orders/new")
     public ResponseEntity<order> addOrder(@RequestBody order newOrder) {
         try {
             order createdOrder = orderService.addOrder(newOrder);
@@ -190,5 +191,18 @@ public class orderController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+//    @GetMapping("/orders/status/{status}")
+//    public ResponseEntity<List<order>> getOrdersByStatus(@PathVariable String status) {
+//        try {
+//            List<Long> orderIds = order_statusService.getIdsByStatus(status);
+//            List<order> orders = orderIds.stream()
+//                    .map(orderService::getOrderById)
+//                    .collect(Collectors.toList());
+//            return new ResponseEntity<>(orders, HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
 }
