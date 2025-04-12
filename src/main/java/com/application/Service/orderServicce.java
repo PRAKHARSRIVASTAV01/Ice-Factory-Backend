@@ -16,14 +16,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import com.application.Object.OrderHistoryDTO;
+import com.application.Object.OrderDetailDTO;
+import com.application.Object.user;
+import com.application.Object.user_address;
+import com.application.Object.address;
+import com.application.Repository.user_addressRepository;
+import com.application.Repository.addressRepository;
 @Service
 public class orderServicce {
 
     @Autowired
     private orderRepository orderRepository;
+
     @Autowired
     private order_statusService order_statusService;
 
+    @Autowired
+    private userService userService;
+
+    @Autowired
+    private user_addressRepository userAddressRepository;
+
+    @Autowired
+    private addressService addressService;
+
+    @Autowired
+    private addressRepository addressRepository;
 
     public order addOrder(order newOrder) {
         newOrder.setOderDate(new Date());
@@ -127,6 +145,90 @@ public class orderServicce {
         }
         
         return orderHistory;
+    }
+
+    public List<OrderDetailDTO> getDetailedOrdersByDateCriteria(Date orderDate, Date deliveryDate) {
+        List<order> orders;
+        
+        if (orderDate != null && deliveryDate != null) {
+            orders = orderRepository.findOrdersByBothDates(orderDate, deliveryDate);
+        } else if (orderDate != null) {
+            orders = orderRepository.findOrdersByOrderDateOnly(orderDate);
+        } else {
+            orders = orderRepository.findOrdersByDeliveryDateOnly(deliveryDate);
+        }
+        
+        List<OrderDetailDTO> detailedOrders = new ArrayList<>();
+        
+        // For each order, get related information
+        for (order order : orders) {
+            OrderDetailDTO detailDTO = new OrderDetailDTO();
+            
+            try {
+                // Set order data
+                detailDTO.setOrderId(order.getId());
+                detailDTO.setQuantity(order.getQuantity());
+                detailDTO.setOrderDate(order.getOderDate());
+                detailDTO.setOrderTime(order.getOderTime());
+                detailDTO.setDeliveryDate(order.getDeliveryDate());
+                detailDTO.setTotalAmount(order.getTotalAmount());
+                
+                // Get order status - handle potential null
+                try {
+                    String status = order_statusService.getStatus(order.getId());
+                    detailDTO.setStatus(status != null ? status : "Unknown");
+                } catch (Exception e) {
+                    detailDTO.setStatus("Unknown");
+                }
+                
+                // Get user data - handle potential null
+                String phone = order.getPhone();
+                detailDTO.setPhone(phone != null ? phone : "");
+                
+                try {
+                    if (phone != null) {
+                        user user = userService.getUserByPhone(phone);
+                        if (user != null) {
+                            detailDTO.setFirstName(user.getFirstName());
+                            detailDTO.setLastName(user.getLastName());
+                        }
+                    }
+                } catch (Exception e) {
+                    // If user data can't be retrieved, continue without it
+                    detailDTO.setFirstName("");
+                    detailDTO.setLastName("");
+                }
+                
+                // Get user address - handle potential null
+                try {
+                    if (phone != null) {
+                        user_address userAddress = userAddressRepository.findByPhone(phone);
+                        if (userAddress != null) {
+                            Long addressId = userAddress.getAddress_id();
+                            detailDTO.setAddressId(addressId);
+                            
+                            if (addressId != null) {
+                                address userAddressDetails = addressRepository.findById(addressId).orElse(null);
+                                if (userAddressDetails != null) {
+                                    detailDTO.setStreet(userAddressDetails.getStreet());
+                                    detailDTO.setCity(userAddressDetails.getCity());
+                                    detailDTO.setPincode(userAddressDetails.getPincode());
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // If address data can't be retrieved, continue without it
+                }
+                
+                detailedOrders.add(detailDTO);
+            } catch (Exception e) {
+                // Log the error and continue with the next order
+                System.err.println("Error processing order " + order.getId() + ": " + e.getMessage());
+            }
+        }
+        
+        return detailedOrders;
     }
 
 }

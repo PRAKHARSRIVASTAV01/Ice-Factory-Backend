@@ -1,5 +1,6 @@
 package com.application.Controller.Public;
 
+import com.application.Object.OrderDetailDTO;
 import com.application.Object.order;
 import com.application.Object.order_status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.application.Object.OrderHistoryDTO;
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Controller("order")
 @CrossOrigin(origins = "${frontend.url}")
 @RequestMapping("api/public")
@@ -192,17 +195,22 @@ public class orderController {
         }
     }
 
-//    @GetMapping("/orders/status/{status}")
-//    public ResponseEntity<List<order>> getOrdersByStatus(@PathVariable String status) {
-//        try {
-//            List<Long> orderIds = order_statusService.getIdsByStatus(status);
-//            List<order> orders = orderIds.stream()
-//                    .map(orderService::getOrderById)
-//                    .collect(Collectors.toList());
-//            return new ResponseEntity<>(orders, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @GetMapping("/orders/detailed")
+    public ResponseEntity<List<OrderDetailDTO>> getDetailedOrders(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date orderDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date deliveryDate) {
+        try {
+            if (orderDate == null && deliveryDate == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            
+            List<OrderDetailDTO> detailedOrders = orderService.getDetailedOrdersByDateCriteria(orderDate, deliveryDate);
+            return new ResponseEntity<>(detailedOrders, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }
