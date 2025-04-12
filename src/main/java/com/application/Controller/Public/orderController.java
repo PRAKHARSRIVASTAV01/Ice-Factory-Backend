@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import com.application.Object.OrderHistoryDTO;
 import org.springframework.format.annotation.DateTimeFormat;
 
+
 @Controller("order")
 @CrossOrigin(origins = "${frontend.url}")
 @RequestMapping("api/public")
@@ -27,6 +28,8 @@ public class orderController {
 
     @Autowired
     private com.application.Service.order_statusService order_statusService;
+@Autowired
+    private com.application.Repository.order_statusRepository order_statusRepository;
 
     @GetMapping("/orders/all")
     public ResponseEntity<List<order>> getAllOrders() {
@@ -132,15 +135,15 @@ public class orderController {
         }
     }
 
-    @GetMapping("/orders/status/{id}")
-    public ResponseEntity<String> getStatus(@PathVariable Long id) {
-        try {
-            String status = order_statusService.getStatus(id);
-            return new ResponseEntity<>(status, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+    // @GetMapping("/orders/status/{id}")
+    // public ResponseEntity<String> getStatus(@PathVariable Long id) {
+    //     try {
+    //         String status = order_statusService.getStatus(id);
+    //         return new ResponseEntity<>(status, HttpStatus.OK);
+    //     } catch (Exception e) {
+    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    //     }
+    // }
 
     @DeleteMapping("/orders/status/{id}")
     public ResponseEntity<Void> deleteStatus(@PathVariable Long id) {
@@ -212,5 +215,16 @@ public class orderController {
         }
     }
 
+    public String getStatus(Long id) {
+        try {
+            order_status status = order_statusRepository.findById(id).orElse(null);
+            System.out.println("Looking for status of order #" + id + ", found: " + (status != null ? status.getStatus() : "null"));
+            return status != null ? status.getStatus() : "Not Found";
+        } catch (Exception e) {
+            System.err.println("Error getting status for order #" + id + ": " + e.getMessage());
+            e.printStackTrace();
+            return "Error";
+        }
+    }
 
 }

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Service
 public class order_statusService {
     @Autowired
-    static order_statusRepository order_statusRepository;
+    private order_statusRepository order_statusRepository; // Removed static keyword
 
     @Autowired
     private com.application.Repository.orderRepository orderRepository;
@@ -38,8 +38,15 @@ public class order_statusService {
     }
     
     public String getStatus(Long id) {
-        order_status status = order_statusRepository.findById(id).orElse(null);
-        return status != null ? status.getStatus() : null;
+        try {
+            order_status status = order_statusRepository.findById(id).orElse(null);
+            System.out.println("Looking for status of order #" + id + ", found: " + (status != null ? status.getStatus() : "null"));
+            return status != null ? status.getStatus() : "Not Found";
+        } catch (Exception e) {
+            System.err.println("Error getting status for order #" + id + ": " + e.getMessage());
+            e.printStackTrace();
+            return "Error";
+        }
     }
 
     public void updateStatus(Long id, String status) {
@@ -77,7 +84,7 @@ public class order_statusService {
         order_statusRepository.deleteById(id);
     }
 
-    public static List<Long> getIdsByStatus(String status) {
+    public List<Long> getIdsByStatus(String status) {
         return order_statusRepository.findAllByStatus(status)
                 .stream()
                 .map(order_status::getId)

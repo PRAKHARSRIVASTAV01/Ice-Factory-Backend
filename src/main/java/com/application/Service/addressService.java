@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class addressService {
 
     @Autowired
-    private  addressRepository  addressRepository;
+    private addressRepository addressRepository;
 
     @Autowired
     private user_addressRepository userAddressRepository;
@@ -24,12 +24,13 @@ public class addressService {
     @Autowired
     private orderRepository orderRepository;
 
+    @Autowired
+    private order_statusService orderStatusService; // Make sure this is correctly injected
 
     public address addAddress(address newAddress , String Phone) {
         addUserAddress(Phone, newAddress.getAddress_id());
         return addressRepository.save(newAddress);
     }
-
 
     public user_address addUserAddress(String phone, Long addressId) {
         user_address userAddress = new user_address();
@@ -59,7 +60,6 @@ public class addressService {
         return null;
     }
 
-
     public boolean deleteAddress(Long id) {
         address address = addressRepository.findById(id).orElse(null);
         if (address != null) {
@@ -77,7 +77,6 @@ public class addressService {
         }
         return false;
     }
-
 
     public List<address> getUserAddresses(String phone) {
         List<user_address> userAddresses =  userAddressRepository.findListByPhone(phone);
@@ -104,7 +103,8 @@ public class addressService {
     }
 
     public List<order> getOrdersByStatus(String status) {
-        List<Long> orderIds = order_statusService.getIdsByStatus(status);
+        // This method should call the non-static method in order_statusService
+        List<Long> orderIds = orderStatusService.getIdsByStatus(status);
         List<order> orders = new ArrayList<>();
         for (Long id : orderIds) {
             order o = orderRepository.findById(id).orElse(null);
