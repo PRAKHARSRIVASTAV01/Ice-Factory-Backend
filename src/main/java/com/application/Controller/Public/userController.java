@@ -43,7 +43,7 @@ public class userController {
         }
     }
 
-    @GetMapping("/users/{phone}")
+    @GetMapping("/users/details/{phone}")
     public ResponseEntity<user> getUserByPhone(@PathVariable String phone) {
         try {
             user user = userService.getUserInfo(phone);
