@@ -20,11 +20,16 @@ public class userService {
 
 
     public boolean verifyLogin(String phone, String password) {
-        user_credentials credentials = userCredentialsRepository.findByPhone(phone);
-        if (credentials != null && credentials.getPassword().equals(password)) {
-            return true;
+        try {
+            user_credentials credentials = userCredentialsRepository.findByPhone(phone);
+            if (credentials != null && credentials.getPassword() != null && credentials.getPassword().equals(password)) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;  // Return false instead of letting the exception propagate
         }
-        return false;
     }
 
     public user getUserInfo(String phone) {

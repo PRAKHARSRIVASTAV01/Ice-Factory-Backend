@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller("sales")
+@Controller("user")
 @CrossOrigin(origins = "${frontend.url}")
-@RequestMapping("api/public")
+@RequestMapping("/api/public")
 public class userController {
 
     @Autowired
