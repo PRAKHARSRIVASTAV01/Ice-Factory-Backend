@@ -206,6 +206,18 @@ public class orderController {
         }
     }
 
+    @GetMapping("/orders/status-count/{deliveryDate}")
+    public ResponseEntity<Map<String, Object>> getOrderStatusCountByDeliveryDate(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date deliveryDate) {
+        try {
+            Map<String, Object> statusData = orderService.getOrderStatusCountByDeliveryDate(deliveryDate);
+            return new ResponseEntity<>(statusData, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public String getStatus(Long id) {
         try {
             order_status status = order_statusRepository.findById(id).orElse(null);

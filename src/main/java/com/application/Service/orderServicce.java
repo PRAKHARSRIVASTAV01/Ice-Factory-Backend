@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.application.Repository.orderRepository;
 import com.application.Object.order;
 import com.application.Repository.order_statusRepository;
-
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -229,6 +228,68 @@ public class orderServicce {
         }
         
         return detailedOrders;
+    }
+
+    public Map<String, Object> getOrderStatusCountByDeliveryDate(Date deliveryDate) {
+        // Get status counts
+        List<Object[]> results = orderRepository.countOrdersByStatusForDeliveryDate(deliveryDate);
+        
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        // Initialize with all possible statuses set to 0
+                statusCountMap.put("confirmed", 0L);
+        statusCountMap.put("pending", 0L);
+        statusCountMap.put("rejected", 0L);
+        statusCountMap.put("delivered", 0L);
+        statusCountMap.put("cancelled", 0L);
+        statusCountMap.put("pending", 0L);
+        
+        // Update with actual counts
+        for (Object[] result : results) {
+            String status = (String) result[0];
+            Long count = ((Number) result[1]).longValue();
+            statusCountMap.put(status, count);
+        }
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("statusCounts", statusCountMap);
+        
+        // Initialize default values
+        Integer totalQuantity = 0;
+        Float totalRevenue = 0.0f;
+        
+        try {
+            // Use the new separate methods for metrics
+            Integer quantity = orderRepository.getTotalDeliveredQuantityForDate(deliveryDate);
+            System.out.println("Delivered quantity for " + deliveryDate + ": " + quantity);
+            if (quantity != null) {
+                totalQuantity = quantity;
+            }
+            
+            Float revenue = orderRepository.getTotalDeliveredRevenueForDate(deliveryDate);
+            System.out.println("Delivered revenue for " + deliveryDate + ": " + revenue);
+            if (revenue != null) {
+                totalRevenue = revenue;
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing delivered metrics: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        response.put("totalQuantity", totalQuantity);
+        response.put("totalRevenue", totalRevenue);
+        
+        try {
+            // Get count of pending future orders
+            Long pendingFutureOrdersCount = orderRepository.countPendingFutureOrders(deliveryDate);
+            response.put("pendingFutureOrders", pendingFutureOrdersCount != null ? pendingFutureOrdersCount : 0);
+        } catch (Exception e) {
+            System.err.println("Error getting pending future orders: " + e.getMessage());
+            e.printStackTrace();
+            response.put("pendingFutureOrders", 0);
+        }
+        
+        return response;
     }
 
 }

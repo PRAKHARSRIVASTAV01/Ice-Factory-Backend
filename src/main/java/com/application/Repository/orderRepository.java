@@ -42,4 +42,27 @@ public interface orderRepository extends JpaRepository<order, Long> {
     @Query(value = "SELECT * FROM orders o WHERE DATE(o.delivery_date) = DATE(:deliveryDate)", 
            nativeQuery = true)
     List<order> findOrdersByDeliveryDateOnly(@Param("deliveryDate") Date deliveryDate);
+
+    // Add this method to your orderRepository interface
+    @Query("SELECT s.status as status, COUNT(o.id) as count FROM order o JOIN order_status s ON o.id = s.id " +
+           "WHERE CAST(o.deliveryDate AS date) = CAST(:deliveryDate AS date) " +
+           "GROUP BY s.status")
+    List<Object[]> countOrdersByStatusForDeliveryDate(@Param("deliveryDate") Date deliveryDate);
+
+    // Split the metrics query into two simpler, more reliable queries
+    @Query("SELECT SUM(o.quantity) FROM order o JOIN order_status s ON o.id = s.id " +
+           "WHERE CAST(o.deliveryDate AS date) = CAST(:deliveryDate AS date) " +
+           "AND s.status = 'delivered'")
+    Integer getTotalDeliveredQuantityForDate(@Param("deliveryDate") Date deliveryDate);
+
+    @Query("SELECT SUM(o.totalAmount) FROM order o JOIN order_status s ON o.id = s.id " +
+           "WHERE CAST(o.deliveryDate AS date) = CAST(:deliveryDate AS date) " +
+           "AND s.status = 'delivered'")
+    Float getTotalDeliveredRevenueForDate(@Param("deliveryDate") Date deliveryDate);
+
+    // Add this new method to count pending future orders
+    @Query("SELECT COUNT(o.id) FROM order o JOIN order_status s ON o.id = s.id " +
+           "WHERE o.deliveryDate > :deliveryDate " +
+           "AND s.status IN ('pending')")
+    Long countPendingFutureOrders(@Param("deliveryDate") Date deliveryDate);
 }
