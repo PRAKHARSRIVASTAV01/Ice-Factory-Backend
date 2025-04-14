@@ -177,9 +177,14 @@ public class orderServicce {
     }
 
     public List<OrderHistoryDTO> getUserOrderHistory(String phone) {
+        // First get all orders for this phone number
         List<order> orders = orderRepository.findOrdersByPhoneOrderByDateDesc(phone);
-        List<OrderHistoryDTO> orderHistory = new ArrayList<>();
         
+        // Then manually sort them by delivery date in descending order
+        orders.sort((a, b) -> b.getDeliveryDate().compareTo(a.getDeliveryDate()));
+        
+        // Now convert to DTOs
+        List<OrderHistoryDTO> orderHistory = new ArrayList<>();
         for (order order : orders) {
             String status = order_statusService.getStatus(order.getId());
             orderHistory.add(new OrderHistoryDTO(order, status));
