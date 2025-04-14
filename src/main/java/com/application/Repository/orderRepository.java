@@ -65,4 +65,11 @@ public interface orderRepository extends JpaRepository<order, Long> {
            "WHERE o.deliveryDate > :deliveryDate " +
            "AND s.status IN ('pending')")
     Long countPendingFutureOrders(@Param("deliveryDate") Date deliveryDate);
+
+    @Query("SELECT o FROM order o " +
+           "WHERE o.deliveryDate BETWEEN :startDate AND :endDate " +
+           "ORDER BY o.deliveryDate ASC, o.oderTime ASC")
+    List<order> findOrdersByDeliveryDateRange(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
 }

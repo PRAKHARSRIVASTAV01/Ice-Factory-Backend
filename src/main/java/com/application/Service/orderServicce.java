@@ -10,10 +10,8 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.ArrayList;
+
 import com.application.Object.OrderHistoryDTO;
 import com.application.Object.OrderDetailDTO;
 import com.application.Object.user;
@@ -21,6 +19,8 @@ import com.application.Object.user_address;
 import com.application.Object.address;
 import com.application.Repository.user_addressRepository;
 import com.application.Repository.addressRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class orderServicce {
 
@@ -42,12 +42,54 @@ public class orderServicce {
     @Autowired
     private addressRepository addressRepository;
 
+    @Transactional
     public order addOrder(order newOrder) {
-        newOrder.setOderDate(new Date());
-        newOrder.setOderTime(new Time(System.currentTimeMillis()));
-        order savedOrder = orderRepository.save(newOrder);
-        order_statusService.addStatus(savedOrder.getId());
-        return savedOrder;
+        try {
+            // Set current date and time
+            newOrder.setOderDate(new Date());
+            newOrder.setOderTime(new Time(System.currentTimeMillis()));
+            
+            // Make sure required fields are set
+            if (newOrder.getPhone() == null || newOrder.getPhone().isEmpty()) {
+                throw new IllegalArgumentException("Phone number is required");
+            }
+            
+            if (newOrder.getDeliveryDate() == null) {
+                throw new IllegalArgumentException("Delivery date is required");
+            }
+            
+            if (newOrder.getQuantity() <= 0) {
+                throw new IllegalArgumentException("Quantity must be greater than zero");
+            }
+            
+            // Calculate total amount if not set
+            if (newOrder.getTotalAmount() <= 0) {
+                // Get user rate or use default rate
+                float rate = 10.0f; // Default rate
+                user user = userService.getUserByPhone(newOrder.getPhone());
+                if (user != null && user.getRate() > 0) {
+                    rate = user.getRate();
+                }
+                
+                float totalAmount = newOrder.getQuantity() * rate;
+                newOrder.setTotalAmount(totalAmount);
+            }
+            
+            System.out.println("Saving order with phone: " + newOrder.getPhone());
+            
+            // Save order first
+            order savedOrder = orderRepository.saveAndFlush(newOrder);
+            System.out.println("Order saved with ID: " + savedOrder.getId());
+            
+            // Create status in a separate transaction
+            order_statusService.addStatus(savedOrder.getId());
+            
+            return savedOrder;
+        } catch (Exception e) {
+            System.err.println("Error in addOrder: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public order getOrderById(Long id) {
@@ -230,6 +272,81 @@ public class orderServicce {
         return detailedOrders;
     }
 
+    public List<OrderDetailDTO> getOrdersByDeliveryDateRange(Date startDate, Date endDate) {
+        List<order> orders = orderRepository.findOrdersByDeliveryDateRange(startDate, endDate);
+        List<OrderDetailDTO> detailedOrders = new ArrayList<>();
+        
+        // For each order, get related information - reusing the code from getDetailedOrdersByDateCriteria
+        for (order order : orders) {
+            OrderDetailDTO detailDTO = new OrderDetailDTO();
+            
+            try {
+                // Set order data
+                detailDTO.setOrderId(order.getId());
+                detailDTO.setQuantity(order.getQuantity());
+                detailDTO.setOrderDate(order.getOderDate());
+                detailDTO.setOrderTime(order.getOderTime());
+                detailDTO.setDeliveryDate(order.getDeliveryDate());
+                detailDTO.setTotalAmount(order.getTotalAmount());
+                
+                // Get order status
+                try {
+                    String status = order_statusService.getStatus(order.getId());
+                    detailDTO.setStatus(status != null ? status : "Unknown");
+                } catch (Exception e) {
+                    detailDTO.setStatus("Unknown");
+                }
+                
+                // Get user data
+                String phone = order.getPhone();
+                detailDTO.setPhone(phone != null ? phone : "");
+                
+                try {
+                    if (phone != null) {
+                        user user = userService.getUserByPhone(phone);
+                        if (user != null) {
+                            detailDTO.setFirstName(user.getFirstName());
+                            detailDTO.setLastName(user.getLastName());
+                        }
+                    }
+                } catch (Exception e) {
+                    // If user data can't be retrieved, continue without it
+                    detailDTO.setFirstName("");
+                    detailDTO.setLastName("");
+                }
+                
+                // Get user address
+                try {
+                    if (phone != null) {
+                        user_address userAddress = userAddressRepository.findByPhone(phone);
+                        if (userAddress != null) {
+                            Long addressId = userAddress.getAddress_id();
+                            detailDTO.setAddressId(addressId);
+                            
+                            if (addressId != null) {
+                                address userAddressDetails = addressRepository.findById(addressId).orElse(null);
+                                if (userAddressDetails != null) {
+                                    detailDTO.setStreet(userAddressDetails.getStreet());
+                                    detailDTO.setCity(userAddressDetails.getCity());
+                                    detailDTO.setPincode(userAddressDetails.getPincode());
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // If address data can't be retrieved, continue without it
+                }
+                
+                detailedOrders.add(detailDTO);
+            } catch (Exception e) {
+                // Log the error and continue with the next order
+                System.err.println("Error processing order " + order.getId() + ": " + e.getMessage());
+            }
+        }
+        
+        return detailedOrders;
+    }
+
     public Map<String, Object> getOrderStatusCountByDeliveryDate(Date deliveryDate) {
         // Get status counts
         List<Object[]> results = orderRepository.countOrdersByStatusForDeliveryDate(deliveryDate);
@@ -242,6 +359,7 @@ public class orderServicce {
         statusCountMap.put("rejected", 0L);
         statusCountMap.put("delivered", 0L);
         statusCountMap.put("cancelled", 0L);
+
         statusCountMap.put("pending", 0L);
         
         // Update with actual counts

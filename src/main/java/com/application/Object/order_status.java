@@ -1,16 +1,13 @@
 package com.application.Object;
 
 import jakarta.persistence.*;
-import jdk.jfr.Unsigned;
 
 @Entity
+@Table(name = "order_status")
 public class order_status {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JoinColumns({
-            @JoinColumn(name = "order_id", referencedColumnName = "order_id"),
-    })
     private Long id;
+    
     private String status;
 
     public order_status() {

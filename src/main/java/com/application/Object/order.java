@@ -36,7 +36,7 @@ public class order {
         return phone;
     }
 
-    public void setPhone(String uphone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 

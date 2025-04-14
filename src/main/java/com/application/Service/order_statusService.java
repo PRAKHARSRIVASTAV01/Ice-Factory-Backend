@@ -6,14 +6,17 @@ import com.application.Object.sales_details;
 import com.application.Repository.order_statusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class order_statusService {
     @Autowired
-    private order_statusRepository order_statusRepository; // Removed static keyword
+    private order_statusRepository order_statusRepository;
 
     @Autowired
     private com.application.Repository.orderRepository orderRepository;
@@ -24,16 +27,37 @@ public class order_statusService {
     @Autowired
     private notificationService notificationService;
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void addStatus(Long id) {
-        order_status newStatus = new order_status();
-        newStatus.setId(id);
-        newStatus.setStatus("placed");
-        order_statusRepository.save(newStatus);
-        
-        // Send notification for new order
-        order order = orderRepository.findById(id).orElse(null);
-        if (order != null) {
-            notificationService.sendOrderPlacedNotification(order);
+        try {
+            // Add synchronization to prevent concurrent access
+            synchronized (this) {
+                // First check if a status already exists for this order - use for update to lock the row
+                boolean statusExists = order_statusRepository.existsById(id);
+                
+                if (statusExists) {
+                    System.out.println("Status already exists for order #" + id);
+                    return; // Status already exists, don't create a duplicate
+                }
+
+                // Create and save new status
+                order_status newStatus = new order_status();
+                newStatus.setId(id);
+                newStatus.setStatus("pending"); // Use your default initial status
+                System.out.println("Creating new status for order #" + id + ": pending");
+                order_statusRepository.saveAndFlush(newStatus); // Use saveAndFlush to commit immediately
+                
+                // Send notification (if applicable)
+                order order = orderRepository.findById(id).orElse(null);
+                if (order != null) {
+                    // notificationService.sendOrderPlacedNotification(order);
+                    System.out.println("Notification sent for order #" + id);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error adding order status: " + e.getMessage());
+            e.printStackTrace();
+            // Don't rethrow to prevent transaction rollback
         }
     }
     

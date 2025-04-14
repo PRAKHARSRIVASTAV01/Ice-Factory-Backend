@@ -20,7 +20,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Controller("order")
 @CrossOrigin(origins = "${frontend.url}")
-@RequestMapping("api/public")
+@RequestMapping("/api/public")
 public class orderController {
 
     @Autowired
@@ -55,9 +55,15 @@ public class orderController {
     @PostMapping("/orders/new")
     public ResponseEntity<order> addOrder(@RequestBody order newOrder) {
         try {
+            System.out.println("Received order: " + newOrder.getPhone() + 
+                              ", quantity: " + newOrder.getQuantity() +
+                              ", deliveryDate: " + newOrder.getDeliveryDate());
+            
             order createdOrder = orderService.addOrder(newOrder);
             return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
         } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error adding order: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -212,6 +218,19 @@ public class orderController {
         try {
             Map<String, Object> statusData = orderService.getOrderStatusCountByDeliveryDate(deliveryDate);
             return new ResponseEntity<>(statusData, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/orders/delivery-range")
+    public ResponseEntity<List<OrderDetailDTO>> getOrdersByDeliveryDateRange(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+        try {
+            List<OrderDetailDTO> orders = orderService.getOrdersByDeliveryDateRange(startDate, endDate);
+            return new ResponseEntity<>(orders, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
