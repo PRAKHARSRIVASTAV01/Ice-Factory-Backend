@@ -28,7 +28,8 @@ public class orderController {
 
     @Autowired
     private com.application.Service.order_statusService order_statusService;
-@Autowired
+
+    @Autowired
     private com.application.Repository.order_statusRepository order_statusRepository;
 
     @GetMapping("/orders/all")
@@ -134,16 +135,6 @@ public class orderController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    // @GetMapping("/orders/status/{id}")
-    // public ResponseEntity<String> getStatus(@PathVariable Long id) {
-    //     try {
-    //         String status = order_statusService.getStatus(id);
-    //         return new ResponseEntity<>(status, HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    //     }
-    // }
 
     @DeleteMapping("/orders/status/{id}")
     public ResponseEntity<Void> deleteStatus(@PathVariable Long id) {
