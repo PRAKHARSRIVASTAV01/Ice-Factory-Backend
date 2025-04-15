@@ -132,9 +132,7 @@ public class orderServicce {
     }
 
     public List<order> getOrdersByPhone(String phone) {
-        return orderRepository.findAll().stream()
-                .filter(order -> order.getPhone().equals(phone))
-                .collect(Collectors.toList());
+        return orderRepository.findAllOrdersByPhone(phone);
     }
 
     public List<order> getAllOrders() {

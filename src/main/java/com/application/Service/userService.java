@@ -18,7 +18,6 @@ public class userService {
     @Autowired
     private user_credentialsRepository userCredentialsRepository;
 
-
     public boolean verifyLogin(String phone, String password) {
         try {
             user_credentials credentials = userCredentialsRepository.findByPhone(phone);
@@ -27,8 +26,7 @@ public class userService {
             }
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;  // Return false instead of letting the exception propagate
+            return false;
         }
     }
 
@@ -110,7 +108,6 @@ public class userService {
         return null;
     }
 
-
     public user getUserByPhone(String phone) {
         return userRepository.findByPhone(phone);
     }
@@ -122,6 +119,4 @@ public class userService {
     public List<user> getUsersByLastName(String lastName) {
         return userRepository.findByLastName(lastName);
     }
-
-
 }

@@ -72,4 +72,6 @@ public interface orderRepository extends JpaRepository<order, Long> {
     List<order> findOrdersByDeliveryDateRange(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate);
+
+    List<order> findAllOrdersByPhone(String phone);
 }
