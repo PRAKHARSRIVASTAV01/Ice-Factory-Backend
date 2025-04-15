@@ -50,7 +50,7 @@ public class order_statusService {
                 // Send notification (if applicable)
                 order order = orderRepository.findById(id).orElse(null);
                 if (order != null) {
-                    // notificationService.sendOrderPlacedNotification(order);
+                    notificationService.sendOrderPlacedNotification(order);
                     System.out.println("Notification sent for order #" + id);
                 }
             }
