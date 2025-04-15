@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.application.Repository.orderRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,16 +28,40 @@ public class addressService {
     @Autowired
     private order_statusService orderStatusService; // Make sure this is correctly injected
 
-    public address addAddress(address newAddress , String Phone) {
-        addUserAddress(Phone, newAddress.getAddress_id());
+    public address addAddress(address newAddress) {
         return addressRepository.save(newAddress);
     }
 
-    public user_address addUserAddress(String phone, Long addressId) {
-        user_address userAddress = new user_address();
-        userAddress.setPhone(phone);
-        userAddress.setAddress_id(addressId);
-        return userAddressRepository.save(userAddress);
+    // public user_address addUserAddress(String phone, Long addressId) {
+    //     user_address userAddress = new user_address();
+    //     userAddress.setPhone(phone);
+    //     userAddress.setAddress_id(addressId);
+    //     return userAddressRepository.save(userAddress);
+    // }
+
+    public void addUserAddress(String phone, Long addressId) {
+        try {
+            // First check if a record already exists
+            Optional<user_address> existingRecord = userAddressRepository.findById(phone);
+            if (existingRecord.isPresent()) {
+                // Update existing record
+                user_address existing = existingRecord.get();
+                existing.setAddress_id(addressId);
+                userAddressRepository.save(existing);
+                System.out.println("Updated address for user: " + phone);
+            } else {
+                // Create new record
+                user_address newRecord = new user_address(phone, addressId);
+                // Double-check the phone is set correctly
+                System.out.println("Setting phone to: " + phone + ", phone in object: " + newRecord.getPhone());
+                userAddressRepository.save(newRecord);
+                System.out.println("Created new user_address record for: " + phone);
+            }
+        } catch (Exception e) {
+            System.err.println("Error in addUserAddress: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public address getAddressById(Long id) {

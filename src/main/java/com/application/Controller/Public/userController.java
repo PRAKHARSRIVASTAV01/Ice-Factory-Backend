@@ -2,12 +2,13 @@ package com.application.Controller.Public;
 
 import com.application.Object.address;
 import com.application.Object.user;
+import com.application.Object.UserRegistrationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
+import com.application.Service.addressService;
 import java.util.List;
 
 @Controller("user")
@@ -18,9 +19,8 @@ public class userController {
     @Autowired
     private com.application.Service.userService userService;
 
-   @Autowired
+    @Autowired
     private com.application.Service.addressService addressService;
-
 
     @GetMapping("/verifyLogin")
     public ResponseEntity<Boolean> verifyLogin(@RequestParam String phone, @RequestParam String password) {
@@ -54,12 +54,21 @@ public class userController {
     }
 
     @PostMapping("/users/new")
-    public ResponseEntity<user> addUser(@RequestBody user newUser, @RequestBody address newAddress) {
+    public ResponseEntity<user> addUser(@RequestBody UserRegistrationDTO registrationDTO) {
         try {
-            addressService.addAddress(newAddress, newUser.getPhone());
+            user newUser = registrationDTO.getUser();
+            address newAddress = registrationDTO.getAddress();
+            
+            // First save the address to get its ID
+            address savedAddress = addressService.addAddress(newAddress);
+            
+            // Now create the user and link with address
+            addressService.addUserAddress(newUser.getPhone(), savedAddress.getAddress_id());
+            
             user createdUser = userService.createUser(newUser);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
