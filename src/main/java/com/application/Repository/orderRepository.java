@@ -14,7 +14,7 @@ public interface orderRepository extends JpaRepository<order, Long> {
 
     @Query("SELECT o FROM order o JOIN order_status s ON o.id = s.id " +
            "WHERE o.deliveryDate BETWEEN :startDate AND :endDate " +
-           "AND s.status IN ('placed', 'processing')")
+           "AND s.status IN ('pending', 'confirmed')")
     List<order> findFutureOrdersForForecast(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
     
     // Fixed query with correct parameter binding
